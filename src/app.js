@@ -17,7 +17,14 @@ app.get("/repositories", (request, response) => {
 app.post("/repositories", (request, response) => {
   const {title , url , techs} = request.body;
 
-  const repositorie = {id: uuid(), title, url, techs, like: 0};
+  const repositorie = {
+     id: uuid(),
+     title, 
+     url, 
+     techs, 
+     like: 0
+  };
+
   repositories.push(repositorie);
 
   return response.json(repositorie);
@@ -27,7 +34,7 @@ app.put("/repositories/:id", (request, response) => {
     const { id } = request.params;
     const {title, url, techs} = request.body;
 
-    const repositoriesIndex = repositories.findIndex(repositorie => repositorie.id == id);
+    const repositoriesIndex = repositories.findIndex(repositorie => repositorie.id === id);
 
     if(repositoriesIndex < 0){
       return response.status(400).json({error: 'project not found.'});
@@ -37,23 +44,25 @@ app.put("/repositories/:id", (request, response) => {
       id,
       title,
       url,
-      techs
+      techs,
+      like: repositories[repositoriesIndex].like
     };
 
-    repositories[repositoriesIndex]=repositorie;
+    repositories[repositoriesIndex] = repositorie;
 
-    return response.json(repositories[repositoriesIndex]);
+    return response.json(repositorie);
 });
 
 app.delete("/repositories/:id", (request, response) => {
     const { id } = request.params;
     const repositoriesIndex = repositories.findIndex(repositorie => repositorie.id == id);
 
-    if(repositoriesIndex < 0) {
+    if(repositoriesIndex === -1) {
       return response.status(400).json({error: 'project not found.'});
     }
 
     repositories.splice(repositoriesIndex, 1);
+
     return response.status(204).send();
 
 });
@@ -64,15 +73,13 @@ app.post("/repositories/:id/like", (request, response) => {
 
   const repositoriesIndex = repositories.findIndex(repositorie => repositorie.id == id);
 
-  if(repositoriesIndex < 0){
+  if(repositoriesIndex === -1){
     return response.status(400).json({error: 'project not found.'});
   }
 
-  const repositorie = {like};
-  repositorie.add(1);
-  repositories.push(repositorie);
+  repositories[repositoriesIndex].like++;
 
-  return response.json(repositorie);
+  return response.json(repositories[repositoriesIndex]);
 
 });
 
